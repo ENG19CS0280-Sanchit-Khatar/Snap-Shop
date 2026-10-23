@@ -1,8 +1,7 @@
 @import url("https://fonts.cdnfonts.com/css/amazon-ember");
 
 body {
-  /* Declares Amazon Ember first, falling back to standard clean sans-serif fonts */
-  font-family: "Amazon Ember", Arial, Helvetica, sans-serif;
+  font-family: "Amazon Ember";
   margin: 0;
   padding: 0;
   box-sizing: border-box;

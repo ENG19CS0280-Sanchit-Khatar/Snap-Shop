@@ -4,8 +4,8 @@ export async function getProducts(params = {}) {
   try {
     const { search, category, brand } = params;
     const endpoint = search
-      ? `${BASE_URL}/products/search?q=${encodeURIComponent(search)}`
-      : `${BASE_URL}/products`;
+      ? `${BASE_URL}/products/search?q=${encodeURIComponent(search)}&limit=0`
+      : `${BASE_URL}/products?limit=0`;
 
     const response = await fetch(endpoint);
 

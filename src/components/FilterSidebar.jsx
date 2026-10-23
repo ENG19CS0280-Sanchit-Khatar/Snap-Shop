@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { X } from "lucide-react";
 import { getCategories } from "../services/api";
 import "../styles/FilterSidebar.css";
 
-const FilterSidebar = () => {
+const FilterSidebar = (props) => {
+  const {
+    isOpen,
+    onClose,
+    products,
+    selectedCategory,
+    selectedBrands,
+    minPrice,
+    maxPrice,
+    handleFiltersChange,
+  } = props;
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const selectedCategory = searchParams.get("category") || "all";
-
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
@@ -25,54 +31,171 @@ const FilterSidebar = () => {
     fetchCategoriesData();
   }, []);
 
-  const handleCategoryChange = (categorySlug) => {
-    setSearchParams((prevParams) => {
-      const params = new URLSearchParams(prevParams);
-      if (categorySlug === "all") {
-        params.delete("category");
-      } else {
-        params.set("category", categorySlug);
-      }
-      return params;
+  const availableBrands = [
+    ...new Set(
+      products
+        .filter(
+          (product) =>
+            !selectedCategory || selectedCategory === product.category,
+        )
+        .map((product) => product.brand)
+        .filter(Boolean),
+    ),
+  ].sort((a, b) => a.localeCompare(b));
+
+  const selectCategory = (category) => {
+    const brandsForCategories = new Set(
+      products
+        .filter((product) => !category || category === product.category)
+        .map((product) => product.brand)
+        .filter(Boolean),
+    );
+
+    handleFiltersChange({
+      category,
+      brands: selectedBrands.filter((brand) => brandsForCategories.has(brand)),
     });
   };
 
+  if (!isOpen) return null;
+
   return (
-    <aside className="filter-sidebar">
-      <h3>Product Categories</h3>
+    <div
+      className="filter-drawer-backdrop"
+      onClick={onClose}
+      role="presentation"
+    >
+      <aside
+        className="filter-sidebar"
+        role="dialog"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="filter-sidebar-header">
+          <h2 id="filter-drawer-title">Filters</h2>
+          <button className="filter-close-btn" type="button" onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
 
-      {loading ? (
-        <p className="filter-loading">Loading filters...</p>
-      ) : (
-        <ul className="filter-list">
-          <li>
-            <button
-              className={`filter-btn ${selectedCategory === "all" ? "active" : ""}`}
-              onClick={() => handleCategoryChange("all")}
-            >
-              All Products
-            </button>
-          </li>
+        {loading ? (
+          <p className="filter-loading">Loading filters...</p>
+        ) : (
+          <div className="filter-sections">
+            <section className="filter-section">
+              <h3>Categories</h3>
+              <ul className="filter-list">
+                <li>
+                  <label className="filter-checkbox">
+                    <input
+                      type="radio"
+                      name="category"
+                      checked={!selectedCategory}
+                      onChange={() => selectCategory("")}
+                    />
+                    <span>All Products</span>
+                  </label>
+                </li>
+                {categories.map((itm) => {
+                  const slug = typeof itm === "object" ? itm.slug : itm;
+                  const name = typeof itm === "object" ? itm.name : itm;
 
-          {categories.map((itm) => {
-            const slug = typeof itm === "object" ? itm.slug : itm;
-            const name = typeof itm === "object" ? itm.name : itm;
+                  return (
+                    <li key={slug}>
+                      <label className="filter-checkbox">
+                        <input
+                          type="radio"
+                          name="category"
+                          checked={selectedCategory === slug}
+                          onChange={() => selectCategory(slug)}
+                        />
+                        <span>
+                          {name.charAt(0).toUpperCase() +
+                            name.slice(1).replaceAll("-", " ")}
+                        </span>
+                      </label>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
 
-            return (
-              <li key={slug}>
-                <button
-                  className={`filter-btn ${selectedCategory === slug ? "active" : ""}`}
-                  onClick={() => handleCategoryChange(slug)}
-                >
-                  {name.charAt(0).toUpperCase() +
-                    name.slice(1).replace("-", " ")}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </aside>
+            <section className="filter-section">
+              <h3>Brands</h3>
+              {availableBrands.length > 0 ? (
+                <ul className="filter-list">
+                  {availableBrands.map((brand) => (
+                    <li key={brand}>
+                      <label className="filter-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={selectedBrands.includes(brand)}
+                          onChange={() => {
+                            const brands = selectedBrands.includes(brand)
+                              ? selectedBrands.filter((itm) => itm !== brand)
+                              : [...selectedBrands, brand];
+                            handleFiltersChange({ brands });
+                          }}
+                        />
+                        <span>{brand}</span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="filter-loading">
+                  No brands available for this category.
+                </p>
+              )}
+            </section>
+
+            <section className="filter-section">
+              <h3>Price Range</h3>
+              <div className="price-range-inputs">
+                <label>
+                  Min
+                  <input
+                    type="number"
+                    min="0"
+                    value={minPrice}
+                    onChange={(event) =>
+                      handleFiltersChange({ minPrice: event.target.value })
+                    }
+                  />
+                </label>
+                <label>
+                  Max
+                  <input
+                    type="number"
+                    min="0"
+                    value={maxPrice}
+                    onChange={(event) =>
+                      handleFiltersChange({ maxPrice: event.target.value })
+                    }
+                  />
+                </label>
+              </div>
+            </section>
+          </div>
+        )}
+
+        <div className="filter-actions">
+          <button
+            className="filter-clear-btn"
+            type="button"
+            onClick={() =>
+              handleFiltersChange({
+                category: "",
+                brands: [],
+                minPrice: "",
+                maxPrice: "",
+              })
+            }
+          >
+            Clear all
+          </button>
+        </div>
+      </aside>
+    </div>
   );
 };
 

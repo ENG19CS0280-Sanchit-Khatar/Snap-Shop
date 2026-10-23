@@ -6,11 +6,21 @@ import ProductListing from "./pages/ProductListing";
 // import "./App.css";
 
 function App() {
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   return (
     <div className="App">
-      <Navbar />
+      <Navbar openFilters={() => setFiltersOpen((isOpen) => !isOpen)} />
       <Routes>
-        <Route path="/" element={<ProductListing />} />
+        <Route
+          path="/"
+          element={
+            <ProductListing
+              filtersOpen={filtersOpen}
+              onCloseFilters={() => setFiltersOpen(false)}
+            />
+          }
+        />
       </Routes>
     </div>
   );

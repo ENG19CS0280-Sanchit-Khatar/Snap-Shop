@@ -12,7 +12,7 @@ const Navbar = (props) => {
     searchParams.get("search") || "",
   );
 
-  // effect for debouncing the search input
+  // effect for debouncing the searsh input
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearchParams((prevParams) => {
@@ -37,7 +37,11 @@ const Navbar = (props) => {
     <header className="navbar-header">
       {/* Left section */}
       <div className="navbar-left">
-        <button className="navbar-menu-btn">
+        <button
+          className="navbar-menu-btn"
+          type="button"
+          onClick={props.openFilters}
+        >
           <Menu size={24} />
         </button>
         <Link to="/" className="navbar-brand">
