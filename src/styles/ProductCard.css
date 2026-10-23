@@ -1,4 +1,6 @@
 .product-card {
+  color: inherit;
+  text-decoration: none;
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -43,9 +45,6 @@
   font-weight: 500;
   color: #111827;
   margin: 0 0 8px 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 

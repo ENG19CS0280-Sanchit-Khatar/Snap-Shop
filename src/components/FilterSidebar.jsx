@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { getCategories } from "../services/api";
+import { getCategoryList } from "../services/api";
 import "../styles/FilterSidebar.css";
 
 const FilterSidebar = (props) => {
@@ -19,7 +19,7 @@ const FilterSidebar = (props) => {
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
-        const data = await getCategories();
+        const data = await getCategoryList();
         setCategories(data);
       } catch (error) {
         console.error("Failed to load categories", error);
@@ -44,17 +44,7 @@ const FilterSidebar = (props) => {
   ].sort((a, b) => a.localeCompare(b));
 
   const selectCategory = (category) => {
-    const brandsForCategories = new Set(
-      products
-        .filter((product) => !category || category === product.category)
-        .map((product) => product.brand)
-        .filter(Boolean),
-    );
-
-    handleFiltersChange({
-      category,
-      brands: selectedBrands.filter((brand) => brandsForCategories.has(brand)),
-    });
+    handleFiltersChange({ category, brands: [] });
   };
 
   if (!isOpen) return null;
@@ -95,23 +85,17 @@ const FilterSidebar = (props) => {
                     <span>All Products</span>
                   </label>
                 </li>
-                {categories.map((itm) => {
-                  const slug = typeof itm === "object" ? itm.slug : itm;
-                  const name = typeof itm === "object" ? itm.name : itm;
-
+                {categories.map((category) => {
                   return (
-                    <li key={slug}>
+                    <li key={category}>
                       <label className="filter-checkbox">
                         <input
                           type="radio"
                           name="category"
-                          checked={selectedCategory === slug}
-                          onChange={() => selectCategory(slug)}
+                          checked={selectedCategory === category}
+                          onChange={() => selectCategory(category)}
                         />
-                        <span>
-                          {name.charAt(0).toUpperCase() +
-                            name.slice(1).replaceAll("-", " ")}
-                        </span>
+                        <span>{category}</span>
                       </label>
                     </li>
                   );

@@ -1,10 +1,16 @@
-import React from "react";
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "../styles/ProductCard.css";
 
 const ProductCard = (props) => {
   const { product } = props;
+  const location = useLocation();
   return (
-    <div className="product-card">
+    <Link
+      to={`/products/${product.id}${location.search}`}
+      state={{ from: `${location.pathname}${location.search}` }}
+      className="product-card"
+    >
       <div className="product-card-image-container">
         <img
           src={product.thumbnail}
@@ -25,7 +31,7 @@ const ProductCard = (props) => {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

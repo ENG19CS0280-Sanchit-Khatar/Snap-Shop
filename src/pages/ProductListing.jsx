@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getProducts } from "../services/api";
+import { getPaginatedItems } from "../services/api";
 import "../styles/ProductListingPage.css";
 import ProductCard from "../components/ProductCard";
 import FilterSidebar from "../components/FilterSidebar";
+import Pagination from "../components/Pagination";
+
+const ITEMS_PER_PAGE = 15;
 
 const ProductListing = ({ filtersOpen, onCloseFilters }) => {
   // states
   const [products, setProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,16 +20,21 @@ const ProductListing = ({ filtersOpen, onCloseFilters }) => {
   const selectedBrands = searchParams.getAll("brand");
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
 
   // effects
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
       try {
-        const data = await getProducts({
+        const data = await getPaginatedItems({
+          limit: ITEMS_PER_PAGE,
+          skip: (page - 1) * ITEMS_PER_PAGE,
+          category: selectedCategory,
           search: searchTerm,
         });
-        setProducts(data);
+        setProducts(data.products);
+        setTotalProducts(data.total);
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -35,7 +44,7 @@ const ProductListing = ({ filtersOpen, onCloseFilters }) => {
     };
 
     loadProducts();
-  }, [searchTerm]);
+  }, [page, searchTerm, selectedCategory]);
 
   const filteredProducts = products.filter((product) => {
     const categoryMatches =
@@ -57,6 +66,7 @@ const ProductListing = ({ filtersOpen, onCloseFilters }) => {
       if ("category" in changes) {
         params.delete("category");
         if (changes.category) params.set("category", changes.category);
+        params.set("page", "1");
       }
       if ("brands" in changes) {
         params.delete("brand");
@@ -70,6 +80,15 @@ const ProductListing = ({ filtersOpen, onCloseFilters }) => {
         if (changes.maxPrice) params.set("maxPrice", changes.maxPrice);
         else params.delete("maxPrice");
       }
+      params.set("page", "1");
+      return params;
+    });
+  };
+
+  const handlePageChange = (nextPage) => {
+    setSearchParams((previousParams) => {
+      const params = new URLSearchParams(previousParams);
+      params.set("page", String(nextPage));
       return params;
     });
   };
@@ -93,11 +112,18 @@ const ProductListing = ({ filtersOpen, onCloseFilters }) => {
       {!loading &&
         !error &&
         (filteredProducts.length > 0 ? (
-          <div className="product-grid">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className="product-grid">
+              {filteredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            <Pagination
+              currentPage={page}
+              totalPages={Math.ceil(totalProducts / ITEMS_PER_PAGE)}
+              onPageChange={handlePageChange}
+            />
+          </>
         ) : (
           <div className="no-results">No products found.</div>
         ))}
