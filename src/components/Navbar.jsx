@@ -8,16 +8,26 @@ const Navbar = (props) => {
   // states
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState("");
-  const [debouncedSearchInput, setDebouncedSearchInput] = useState("");
+  const [searchParam, setSearchParam] = useState(
+    searchParams.get("search") || "",
+  );
 
   // effect for debouncing the search input
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearchInput(searchInput);
+      setSearchParams((prevParams) => {
+        const params = new URLSearchParams(prevParams);
+        if (searchInput.trim()) {
+          params.set("search", searchInput.trim());
+        } else {
+          params.delete("search");
+        }
+        return params;
+      });
     }, 1000);
     return () => clearTimeout(timer);
-  }, [searchInput]);
-  console.log("debouncedSearchInput", searchInput, debouncedSearchInput);
+  }, [searchInput, setSearchParams]);
+  console.log("debouncedSearchInput", searchInput, searchParam);
 
   // handlers
   const handleSearchInputChange = (e) => {
