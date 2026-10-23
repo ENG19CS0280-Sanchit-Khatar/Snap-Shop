@@ -17,6 +17,7 @@ const ProductCard = (props) => {
             src={product.thumbnail}
             alt={product.title}
             className="product-card-image"
+            loading="lazy"
           />
         </div>
 
