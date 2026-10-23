@@ -27,7 +27,6 @@ const Navbar = (props) => {
     }, 1000);
     return () => clearTimeout(timer);
   }, [searchInput, setSearchParams]);
-  console.log("debouncedSearchInput", searchInput, searchParam);
 
   // handlers
   const handleSearchInputChange = (e) => {
