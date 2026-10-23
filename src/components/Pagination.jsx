@@ -1,3 +1,5 @@
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null;
 
@@ -8,6 +10,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage <= 1}
       >
+        <ArrowLeft size={16} />
         Previous
       </button>
       <span>
@@ -19,6 +22,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         disabled={currentPage >= totalPages}
       >
         Next
+        <ArrowRight size={16} />
       </button>
     </nav>
   );

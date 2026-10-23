@@ -57,12 +57,22 @@ const Navbar = (props) => {
       </div>
       {/* Right section */}
       <div className="navbar-right">
-        <div className="navbar-action-item">
+        <button
+          className="navbar-action-item"
+          type="button"
+          aria-label="Cart (disabled)"
+          disabled
+        >
           <ShoppingCart size={20} />
-        </div>
-        <div className="navbar-action-item">
+        </button>
+        <button
+          className="navbar-action-item"
+          type="button"
+          aria-label="Profile (disabled)"
+          disabled
+        >
           <User size={20} />
-        </div>
+        </button>
       </div>
     </header>
   );

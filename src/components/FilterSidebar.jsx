@@ -16,6 +16,13 @@ const FilterSidebar = (props) => {
   } = props;
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const formatCategory = (category) =>
+    category
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
@@ -95,7 +102,7 @@ const FilterSidebar = (props) => {
                           checked={selectedCategory === category}
                           onChange={() => selectCategory(category)}
                         />
-                        <span>{category}</span>
+                        <span>{formatCategory(category)}</span>
                       </label>
                     </li>
                   );

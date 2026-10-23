@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getProductById } from "../services/api";
 import "../styles/ProductListingPage.css";
@@ -26,6 +27,7 @@ const ProductDetail = () => {
         type="button"
         onClick={() => navigate(location.state?.from || `/${location.search}`)}
       >
+        <ArrowLeft size={16} />
         Back
       </button>
       <img src={product.images?.[0] || product.thumbnail} alt={product.title} />
