@@ -1,5 +1,7 @@
 # Snap Shop
+An E-commerce web application using the DummyJSON API, Search for your favourite products apply filters and place your order in one tap.
 
+## Video Reference: https://drive.google.com/file/d/1PcO6DlrtpuBtJ_huE7eTM8Jfc9mGiaRd/view?usp=sharing
 ## Architectural Decisions:
 - Pagination: used DummyJSON’s API based pagination to keep DOM lightweight and avoid memory overhead
 
