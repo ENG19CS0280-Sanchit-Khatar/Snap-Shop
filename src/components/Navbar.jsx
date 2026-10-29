@@ -8,9 +8,13 @@ const Navbar = (props) => {
   // states
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState("");
-  const [searchParam, setSearchParam] = useState(
-    searchParams.get("search") || "",
-  );
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchInput(searchParams.get("search") || "");
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [searchParams]);
 
   // effect for debouncing the searsh input
   useEffect(() => {

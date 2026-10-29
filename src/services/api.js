@@ -27,6 +27,28 @@ export async function getPaginatedItems({
   category = "",
   search = "",
 } = {}) {
+  if (category && search) {
+    const endpoint = `${BASE_URL}/products/category/${encodeURIComponent(category)}?limit=0`;
+    const response = await fetch(endpoint);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch products (HTTP ${response.status})`);
+    }
+
+    const data = await response.json();
+    const normalizedSearch = search.toLowerCase();
+    const matchingProducts = data.products.filter((product) =>
+      [product.title, product.description].some((value) =>
+        value.toLowerCase().includes(normalizedSearch),
+      ),
+    );
+
+    return {
+      products: matchingProducts.slice(skip, skip + limit),
+      total: matchingProducts.length,
+    };
+  }
+
   const endpoint = category
     ? `${BASE_URL}/products/category/${encodeURIComponent(category)}?limit=${limit}&skip=${skip}`
     : search

@@ -62,6 +62,7 @@ const ProductListing = ({ filtersOpen, onCloseFilters }) => {
   const handleFiltersChange = (changes) => {
     setSearchParams((previousParams) => {
       const params = new URLSearchParams(previousParams);
+      params.delete("search");
 
       if ("category" in changes) {
         params.delete("category");
